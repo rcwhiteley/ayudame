@@ -4,7 +4,11 @@
     "slug": "ayudame",
     "version": "1.0.0",
     "orientation": "portrait",
+<<<<<<< HEAD
     "icon": "./assets/icon1.png",
+=======
+    "icon": "./assets/Icon1.png",
+>>>>>>> sideMenu
     "splash": {
       "image": "./assets/Splash1.png",
       "resizeMode": "contain",

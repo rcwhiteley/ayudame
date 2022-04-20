@@ -1,12 +1,15 @@
 import React from "react";
 import {Platform, ScrollView, TouchableOpacity, Text, StyleSheet, Image,ImageBackground, TextInput, SafeAreaView, KeyboardAvoidingView} from "react-native";
+import { useAuthContext } from "../../contexts/AuthContext";
+import { NavigationContainer } from '@react-navigation/native';
 const image = require('../../assets/Rojito.jpg');
 const logo = require('../../assets/adaptatiteIcon1.png');
 const logoGoogle = require('../../assets/icongoogle.png');
 
-const Login = ({navigation}) =>{
+const Login = ({navigation, setLoggedIn}) =>{
     const [correo, YaEscritoEmail] = React.useState(null);
     const [contrasenha, YaEscritoContra] = React.useState(null);
+    const {login} = useAuthContext();
     return(
       <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -36,7 +39,8 @@ const Login = ({navigation}) =>{
                         style = {styles.button}
                         activeOpacity={0.5}
                           onPress = { () => {
-                              navigation.navigate('Main')}}>
+                              login("TOKEN_USUARIO");
+                              }}>
                                 <Text
                                 style={styles.textoboton}>Iniciar Sesion</Text>
                         </TouchableOpacity>
@@ -44,7 +48,7 @@ const Login = ({navigation}) =>{
                         style={styles.buttonGoogle}
                         activeOpacity={0.5}
                           onPress = { () => {
-                            navigation.navigate('Main')}}>
+                            login("TOKEN_USUARIO_GOOGLE")}}>
                                 <Image
                                   source={logoGoogle}
                                   style={styles.buttonImageIconStyle}
@@ -138,7 +142,6 @@ const styles = StyleSheet.create({
         flex: 2, 
         width: 250,
         height: 250,
-        //marginHorizontal:'auto'
         marginLeft:70,
         marginTop:30,
       },
