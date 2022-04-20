@@ -18,7 +18,9 @@ const Main = () => {
             ) : (
 
                 <NavigationContainer>
-                    <Drawer.Navigator backBehavior="history" useLegacyImplementation drawerContent={(props) => <DrawerNavContent {...props} />}>
+                    <Drawer.Navigator screenOptions={
+                        {drawerStyle:{width: 210}}
+                    } backBehavior="history" useLegacyImplementation drawerContent={(props) => <DrawerNavContent {...props} />}>
                         <Drawer.Screen name="MapScreen" component={MapScreen} />
                         <Drawer.Screen name="Configuration" component={Configuration} />
                         <Drawer.Screen name="Login" component={Login} />
