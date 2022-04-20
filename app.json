@@ -4,7 +4,7 @@
     "slug": "ayudame",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/Icon1.png",
     "splash": {
       "image": "./assets/Splash1.png",
       "resizeMode": "contain",
@@ -21,7 +21,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/adaptatiteIcon1.png",
         "backgroundColor": "#FFFFFF"
       }
     },

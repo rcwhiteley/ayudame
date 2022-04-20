@@ -1,7 +1,8 @@
 import React from "react";
 import { View, Button, Text } from "react-native";
+import { NavigationContainer } from '@react-navigation/native';
 
-const Configuration = () =>{
+const Configuration = (navigation) =>{
     return(
         <View>
             <Text>Hola desde Configuration</Text>

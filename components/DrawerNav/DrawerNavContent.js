@@ -7,16 +7,18 @@ import { useNavigation } from "@react-navigation/native"
 
 export function DrawerNavContent(props) {
     const navigation = useNavigation();
+    /*
     navigation.reset({
         index: 1,
     routes: [
       { name: 'Home' },
       {
-        name: 'lOGIN',
+        name: 'Login',
       },
     ],
 
     })
+    */
     return (
         <DrawerContentScrollView {...props}>
             {/* <DrawerItemList {...props}>
