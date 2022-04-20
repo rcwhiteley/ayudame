@@ -4,7 +4,7 @@ const image = require('../../assets/Rojito.jpg');
 const logo = require('../../assets/adaptatiteIcon1.png');
 const logoGoogle = require('../../assets/icongoogle.png');
 
-const Login = ({navigation}) =>{
+const Login = ({navigation, setLoggedIn}) =>{
     const [correo, YaEscritoEmail] = React.useState(null);
     const [contrasenha, YaEscritoContra] = React.useState(null);
     return(
@@ -36,7 +36,8 @@ const Login = ({navigation}) =>{
                         style = {styles.button}
                         activeOpacity={0.5}
                           onPress = { () => {
-                              navigation.navigate('Main')}}>
+                              setLoggedIn(true);
+                              }}>
                                 <Text
                                 style={styles.textoboton}>Iniciar Sesion</Text>
                         </TouchableOpacity>
@@ -44,7 +45,7 @@ const Login = ({navigation}) =>{
                         style={styles.buttonGoogle}
                         activeOpacity={0.5}
                           onPress = { () => {
-                            navigation.navigate('Main')}}>
+                            setLoggedIn(true)}}>
                                 <Image
                                   source={logoGoogle}
                                   style={styles.buttonImageIconStyle}
