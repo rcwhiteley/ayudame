@@ -1,6 +1,7 @@
 import React from "react";
 import {Platform, ScrollView, TouchableOpacity, Text, StyleSheet, Image,ImageBackground, TextInput, SafeAreaView, KeyboardAvoidingView} from "react-native";
 import { useAuthContext } from "../../contexts/AuthContext";
+import { NavigationContainer } from '@react-navigation/native';
 const image = require('../../assets/Rojito.jpg');
 const logo = require('../../assets/adaptatiteIcon1.png');
 const logoGoogle = require('../../assets/icongoogle.png');
@@ -141,7 +142,8 @@ const styles = StyleSheet.create({
         flex: 2, 
         width: 250,
         height: 250,
-        marginHorizontal:'auto'
+        marginLeft:70,
+        marginTop:30,
       },
 });
 

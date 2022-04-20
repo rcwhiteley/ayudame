@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react'
 import { View, Button, Text } from "react-native";
-import { DrawerRouter, NavigationContainer } from "@react-navigation/native";
+import { DrawerRouter, NavigationContainer, createNavigationContainerRef  } from "@react-navigation/native";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import MapScreen from "../../views/map-screen/MapScreen";
 import Configuration from "../../views/configuration/Configuration";
