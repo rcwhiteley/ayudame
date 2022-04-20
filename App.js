@@ -3,23 +3,23 @@ import { StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Login from './views/login/Login';
+
 import Main from './navigations/main/Main';
-import React, {useState} from 'react'
+import React, { useState } from 'react'
+import { AuthContextProvider } from './contexts/AuthContext';
 
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  const [loggedIn, setLoggedIn] = useState(false);
-  console.log(loggedIn)
-  if(loggedIn == false) 
-    return (<Login setLoggedIn={setLoggedIn}></Login>)
-  else
-    return (
-    <NavigationContainer>
-      <Main></Main>
-    </NavigationContainer>
-    )
+  return (
+    <AuthContextProvider>
+      
+        <Main></Main>
+      
+    </AuthContextProvider>
+
+  )
 }
 
 const styles = StyleSheet.create({

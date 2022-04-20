@@ -1,5 +1,6 @@
 import React from "react";
 import {Platform, ScrollView, TouchableOpacity, Text, StyleSheet, Image,ImageBackground, TextInput, SafeAreaView, KeyboardAvoidingView} from "react-native";
+import { useAuthContext } from "../../contexts/AuthContext";
 const image = require('../../assets/Rojito.jpg');
 const logo = require('../../assets/adaptatiteIcon1.png');
 const logoGoogle = require('../../assets/icongoogle.png');
@@ -7,6 +8,7 @@ const logoGoogle = require('../../assets/icongoogle.png');
 const Login = ({navigation, setLoggedIn}) =>{
     const [correo, YaEscritoEmail] = React.useState(null);
     const [contrasenha, YaEscritoContra] = React.useState(null);
+    const {login} = useAuthContext();
     return(
       <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -36,7 +38,7 @@ const Login = ({navigation, setLoggedIn}) =>{
                         style = {styles.button}
                         activeOpacity={0.5}
                           onPress = { () => {
-                              setLoggedIn(true);
+                              login("TOKEN_USUARIO");
                               }}>
                                 <Text
                                 style={styles.textoboton}>Iniciar Sesion</Text>
@@ -45,7 +47,7 @@ const Login = ({navigation, setLoggedIn}) =>{
                         style={styles.buttonGoogle}
                         activeOpacity={0.5}
                           onPress = { () => {
-                            setLoggedIn(true)}}>
+                            login("TOKEN_USUARIO_GOOGLE")}}>
                                 <Image
                                   source={logoGoogle}
                                   style={styles.buttonImageIconStyle}
