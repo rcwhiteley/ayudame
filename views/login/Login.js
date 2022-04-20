@@ -66,7 +66,7 @@ const Login = ({navigation}) =>{
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1, 
+        flex: 1,
       },
       image: {
         flex: 1, 
@@ -138,7 +138,9 @@ const styles = StyleSheet.create({
         flex: 2, 
         width: 250,
         height: 250,
-        marginHorizontal:'auto'
+        //marginHorizontal:'auto'
+        marginLeft:70,
+        marginTop:30,
       },
 });
 
