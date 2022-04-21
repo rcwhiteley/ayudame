@@ -12,10 +12,12 @@ import MapView, {
   ProviderPropType,
   Marker,
   AnimatedRegion,
+  Circle,
 } from 'react-native-maps';
 
 import * as Location from 'expo-location'
 import { watchPosition } from './PositionWatcher';
+import { getDangerZones } from './DangerZonesAPI';
 
 const screen = Dimensions.get('window');
 
@@ -30,6 +32,7 @@ const INITIAL_COORDS = {
   latitudeDelta: LATITUDE_DELTA,
   longitudeDelta: LONGITUDE_DELTA
 }
+
 
 
 class AnimatedMarkers extends React.Component {
@@ -47,8 +50,8 @@ class AnimatedMarkers extends React.Component {
       isFocusingUser: true,
       lastCoordinate: {
         ...INITIAL_COORDS
-      }
-
+      },
+      dangerZones: []
     };
   }
 
@@ -70,7 +73,7 @@ class AnimatedMarkers extends React.Component {
       try {
         this._map.current.animateToRegion(coords);
       }
-      catch (err) { }
+      catch (err) { console.log(err) }
   }
 
   toggleIsFocusingUser() {
@@ -103,6 +106,17 @@ class AnimatedMarkers extends React.Component {
             }}
             coordinate={this.state.coordinate}
           />
+          {
+            this.state.dangerZones.map(dangerZone => (
+              <MapView.Circle
+                center={{ latitude: dangerZone.latitude, longitude: dangerZone.longitude }}
+                radius={40}
+                strokeColor={`rgba(255, ${200 - 20 * dangerZone.level}, 0, 0.5)`}
+                fillColor={`rgba(255, ${200 - 20 * dangerZone.level}, 0, 0.5)`}
+              />
+            ))
+          }
+
         </MapView>
         <MaterialIcons onPress={() => this.toggleIsFocusingUser()} name="gps-fixed" size={40} backgroundColor="white" color={this.state.isFocusingUser ? "green" : "grey"} style={{ position: 'absolute', bottom: 10, right: 10 }} />
       </View>
@@ -110,22 +124,23 @@ class AnimatedMarkers extends React.Component {
   }
 
 
-  parseLocation(coords){
+  parseLocation(coords) {
     return {
-        latitude: coords.latitude,
-        longitude: coords.longitude,
-        latitudeDelta: LATITUDE_DELTA,
-        longitudeDelta: LONGITUDE_DELTA
+      latitude: coords.latitude,
+      longitude: coords.longitude,
+      latitudeDelta: LATITUDE_DELTA,
+      longitudeDelta: LONGITUDE_DELTA
     }
   }
 
-  componentDidMount() {
+  useGps() {
     watchPosition((loc) => {
       let currentPosition = {
         latitude: loc.coords.latitude,
         longitude: loc.coords.longitude,
         latitudeDelta: LATITUDE_DELTA,
-        longitudeDelta: LONGITUDE_DELTA}
+        longitudeDelta: LONGITUDE_DELTA
+      }
       if (this.state.coordinate.latitude == 0) {
         this.setState({
           coordinate: new AnimatedRegion({
@@ -140,11 +155,17 @@ class AnimatedMarkers extends React.Component {
         this.animate({
           ...currentPosition
         })
+        this.setState({ lastCoordinate: { ...currentPosition } })
       }
-    });
+    })
+  }
+
+
+  componentDidMount() {
+    this.setState({ dangerZones: getDangerZones() })
+    this.useGps();
   }
 }
-
 AnimatedMarkers.propTypes = {
   provider: ProviderPropType,
 };
