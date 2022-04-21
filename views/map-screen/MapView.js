@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   Platform,
 } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons'; 
+import { MaterialIcons } from '@expo/vector-icons';
 import MapView, {
   ProviderPropType,
   Marker,
@@ -15,15 +15,22 @@ import MapView, {
 } from 'react-native-maps';
 
 import * as Location from 'expo-location'
-import { Button } from 'react-native-paper';
+import { watchPosition } from './PositionWatcher';
 
 const screen = Dimensions.get('window');
 
 const ASPECT_RATIO = screen.width / screen.height;
-const LATITUDE = 37.78825;
-const LONGITUDE = -122.4324;
+var LATITUDE = 37.78825;
+var LONGITUDE = -122.4324;
 const LATITUDE_DELTA = 0.005;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
+const INITIAL_COORDS = {
+  latitude: LATITUDE,
+  longitude: LONGITUDE,
+  latitudeDelta: LATITUDE_DELTA,
+  longitudeDelta: LONGITUDE_DELTA
+}
+
 
 class AnimatedMarkers extends React.Component {
   _map = React.createRef()
@@ -32,17 +39,16 @@ class AnimatedMarkers extends React.Component {
 
     this.state = {
       coordinate: new AnimatedRegion({
-        latitude: LATITUDE,
-        longitude: LONGITUDE,
-        latitudeDelta: LATITUDE_DELTA,
-        longitudeDelta: LONGITUDE_DELTA
+        ...INITIAL_COORDS
       }),
       region: {
-        latitude: LATITUDE,
-        longitude: LONGITUDE,
-        latitudeDelta: LATITUDE_DELTA,
-        longitudeDelta: LONGITUDE_DELTA
+        ...INITIAL_COORDS
       },
+      isFocusingUser: true,
+      lastCoordinate: {
+        ...INITIAL_COORDS
+      }
+
     };
   }
 
@@ -55,33 +61,38 @@ class AnimatedMarkers extends React.Component {
       console.log(this.marker.current)
       this.marker._component.animateMarkerToCoordinate(newCoordinate, 500);
 
-    } else {
-      // `useNativeDriver` defaults to false if not passed explicitly
+    }
+    else {
       coordinate.timing({ ...newCoordinate, useNativeDriver: true }).start();
-      //region.timing({ ...newCoordinate, useNativeDriver: true }).start();
-      
+
     }
-    try{
-      console.log("aaahh");
-      this._map.current.animateToRegion(coords);
-      console.log("aaahhsdasd");
+    if (this.state.isFocusingUser)
+      try {
+        this._map.current.animateToRegion(coords);
+      }
+      catch (err) { }
+  }
+
+  toggleIsFocusingUser() {
+    this.setState({ isFocusingUser: !this.state.isFocusingUser })
+    if (!this.state.isFocusingUser) {
+
     }
-    catch(err){}
   }
 
   render() {
-    if (this.state.coordinate == 0) return <Text>Loading...</Text>
-    let lat = (this.state.coordinate.latitude)
-    let lon = (this.state.coordinate.longitude)
+    if (this.state.coordinate.latitude == 0) return <Text>Loading...</Text>
     return (
       <View style={styles.container}>
         <MapView
-        ref={this._map}
+          showsBuildings={false}
+          showsIndoors={false}
+          ref={this._map}
           style={styles.map}
           //region={this.state.region}
           initialRegion={{
-            latitude: LATITUDE,
-            longitude: LONGITUDE,
+            latitude: this.state.region.latitude,
+            longitude: this.state.region.longitude,
             latitudeDelta: LATITUDE_DELTA,
             longitudeDelta: LONGITUDE_DELTA,
           }}
@@ -93,63 +104,44 @@ class AnimatedMarkers extends React.Component {
             coordinate={this.state.coordinate}
           />
         </MapView>
-        <MaterialIcons name="gps-fixed" size={40} backgroundColor="white" color="darkcyan" style={{position: 'absolute', bottom:10, right: 10}} />
+        <MaterialIcons onPress={() => this.toggleIsFocusingUser()} name="gps-fixed" size={40} backgroundColor="white" color={this.state.isFocusingUser ? "green" : "grey"} style={{ position: 'absolute', bottom: 10, right: 10 }} />
       </View>
     );
   }
 
-  
-  componentDidMount() {
-    console.log('hi')
-    const _getLocationAsync = async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync()
-      if (status !== 'granted') {
-        console.log('debieeed')
-      }
-      else
-      console.log("whiiii");
-      let locations = await Location.watchPositionAsync({ accuracy: Location.Accuracy.Highest, timeInterval: 1000, distanceInterval: 0 },
-        (loc) => {
-          //console.log(loc);
-          this.animate();
-          if (this.state.coordinate.latitude == 0) {
-            this.setState({
-              coordinate: new AnimatedRegion({
-                latitude: loc.coords.latitude,
-                longitude: loc.coords.longitude,
-                latitudeDelta: LATITUDE_DELTA,
-                longitudeDelta: LONGITUDE_DELTA
-              }),
-              region:  new AnimatedRegion({
-                latitude: loc.coords.latitude,
-                longitude: loc.coords.longitude,
-                latitudeDelta: 0.005,
-                longitudeDelta: LONGITUDE_DELTA,
-              })
-            })
-          }
-          else {
-            this.animate({
-              latitude: loc.coords.latitude,
-              longitude: loc.coords.longitude,
-              latitudeDelta: LATITUDE_DELTA,
-              longitudeDelta: LONGITUDE_DELTA
-            })
-            // this.setState({
-            //   region: {
-            //     latitude: loc.coords.latitude,
-            //     longitude: loc.coords.longitude,
-            //     latitudeDelta: LATITUDE_DELTA,
-            //     longitudeDelta: LONGITUDE_DELTA,
-            //   }
-            // })
-          }
-        });
-  
-  
+
+  parseLocation(coords){
+    return {
+        latitude: coords.latitude,
+        longitude: coords.longitude,
+        latitudeDelta: LATITUDE_DELTA,
+        longitudeDelta: LONGITUDE_DELTA
     }
-  
-    _getLocationAsync();
+  }
+
+  componentDidMount() {
+    watchPosition((loc) => {
+      let currentPosition = {
+        latitude: loc.coords.latitude,
+        longitude: loc.coords.longitude,
+        latitudeDelta: LATITUDE_DELTA,
+        longitudeDelta: LONGITUDE_DELTA}
+      if (this.state.coordinate.latitude == 0) {
+        this.setState({
+          coordinate: new AnimatedRegion({
+            ...currentPosition
+          }),
+          region: new AnimatedRegion({
+            ...currentPosition
+          })
+        })
+      }
+      else {
+        this.animate({
+          ...currentPosition
+        })
+      }
+    });
   }
 }
 
@@ -165,28 +157,6 @@ const styles = StyleSheet.create({
   },
   map: {
     ...StyleSheet.absoluteFillObject,
-  },
-  bubble: {
-    flex: 1,
-    backgroundColor: 'rgba(255,255,255,0.7)',
-    paddingHorizontal: 18,
-    paddingVertical: 12,
-    borderRadius: 20,
-  },
-  latlng: {
-    width: 200,
-    alignItems: 'stretch',
-  },
-  button: {
-    width: 80,
-    paddingHorizontal: 12,
-    alignItems: 'center',
-    marginHorizontal: 10,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    marginVertical: 20,
-    backgroundColor: 'transparent',
   },
 });
 
