@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   Platform,
 } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialIcons, Ionicons } from '@expo/vector-icons';
 import MapView, {
   ProviderPropType,
   Marker,
@@ -18,6 +18,9 @@ import MapView, {
 import * as Location from 'expo-location'
 import { watchPosition } from './PositionWatcher';
 import { getDangerZones } from './DangerZonesAPI';
+import { Modal } from 'react-native-paper';
+import { ActionsModal } from './ActionsModal';
+import { EmergencyModal } from './EmergencyModal';
 
 const screen = Dimensions.get('window');
 
@@ -51,29 +54,34 @@ class AnimatedMarkers extends React.Component {
       lastCoordinate: {
         ...INITIAL_COORDS
       },
-      dangerZones: []
+      dangerZones: [],
+      actionModalVisible: false,
+      emergencyModalVisible: false,
     };
   }
 
   animate(coords) {
-    let { coordinate, region } = this.state;
-    console.log(region);
-    let newCoordinate = coords;
+    try {
+      let { coordinate, region } = this.state;
+      //console.log(region);
+      let newCoordinate = coords;
 
-    if (Platform.OS === 'androids') {
-      console.log(this.marker.current)
-      this.marker._component.animateMarkerToCoordinate(newCoordinate, 500);
+      if (Platform.OS === 'androids') {
+        console.log(this.marker.current)
+        this.marker._component.animateMarkerToCoordinate(newCoordinate, 500);
 
-    }
-    else {
-      coordinate.timing({ ...newCoordinate, useNativeDriver: true }).start();
-
-    }
-    if (this.state.isFocusingUser)
-      try {
-        this._map.current.animateToRegion(coords);
       }
-      catch (err) { console.log(err) }
+      else {
+        coordinate.timing({ ...newCoordinate, useNativeDriver: true }).start();
+
+      }
+      if(this == null || this._map == null || this._map.current == null)
+      return;
+      if (this.state.isFocusingUser  )
+
+        this._map.current.animateToRegion(coords);
+    }
+    catch (err) { console.log(err) }
   }
 
   toggleIsFocusingUser() {
@@ -83,8 +91,17 @@ class AnimatedMarkers extends React.Component {
     }
   }
 
+  setActionModalVisible(boolean) {
+    this.setState({ actionModalVisible: boolean });
+  }
+
+  setEmergencyModalVisible(boolean) {
+    this.setState({ emergencyModalVisible: boolean });
+  }
+
   render() {
     if (this.state.coordinate.latitude == 0) return <Text>Loading...</Text>
+    console.log("rendering")
     return (
       <View style={styles.container}>
         <MapView
@@ -116,9 +133,12 @@ class AnimatedMarkers extends React.Component {
               />
             ))
           }
-
         </MapView>
+        <ActionsModal visible={this.state.actionModalVisible} setVisible={(val) => this.setActionModalVisible(val)} notifyAction={(action) => console.log(action)} ></ActionsModal>
+        <EmergencyModal visible={this.state.emergencyModalVisible} setVisible={(val) => this.setEmergencyModalVisible(val)} />
+        <Ionicons onPress={() => this.setActionModalVisible(true)} name="warning-outline" backgroundColor={'yellow'} size={40} color={'black'} style={{ position: 'absolute', bottom: 60, right: 10 }} />
         <MaterialIcons onPress={() => this.toggleIsFocusingUser()} name="gps-fixed" size={40} backgroundColor="white" color={this.state.isFocusingUser ? "green" : "grey"} style={{ position: 'absolute', bottom: 10, right: 10 }} />
+        <MaterialIcons onPress={() => this.setEmergencyModalVisible(true)} name="error" size={60} backgroundColor="white" color='red' style={{ position: 'absolute', top: 50, right: 10 }} />
       </View>
     );
   }
