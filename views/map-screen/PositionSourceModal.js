@@ -1,26 +1,19 @@
 import React from 'react'
-import { Modal, Text, Pressable, View } from 'react-native'
+import {Modal, View} from 'react-native'
+import { Button } from '../../components/Button'
 import { StyleSheet } from 'react-native'
 import { Ionicons } from '@expo/vector-icons';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { Button } from '../../components/Button';
 
-export const ActionsModal = ({ visible, setVisible, notifyAction }) => {
+export const PositionSourceModal = ({visible,setPositionSource})=>{
     return (
         <Modal
-
             style={{ flex: 1 }}
-            animationType='slide'
             transparent={true}
-
             visible={visible}>
-
             <View style={styles.container}>
-                <Ionicons name="close" size={30} color="grey" iconStyle={styles.exitButton} onPress={() => setVisible(false)} />
-                <Button style={styles.button} textStyle={styles.text} title='asalto' onPress={() => notifyAction('asalto')}></Button>
-                <Button style={styles.button} textStyle={styles.text} title='robo' onPress={() => notifyAction('robo')}></Button>
-                <Button style={styles.button} textStyle={styles.text} title='rapto' onPress={() => notifyAction('rapto')}></Button>
-                <Button style={styles.button} textStyle={styles.text} title='grupo molesto' onPress={() => notifyAction('grupo_molesto')}></Button>
+                 <Ionicons name="close" size={30} color="grey" iconStyle={styles.exitButton} onPress={() => setPositionSource('')} /> 
+                <Button style={styles.button} textStyle={styles.text} title='Mi posicion actual' onPress={() => setPositionSource('currentPosition')}></Button>
+                <Button style={styles.button} textStyle={styles.text} title='Elegir en mapa' onPress={() => setPositionSource('select')}></Button>        
             </View>
         </Modal>
 
@@ -33,7 +26,6 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 20,
         backgroundColor: 'white',
-        position: 'absolute',
         bottom: 0,
         borderRadius: 10
     },

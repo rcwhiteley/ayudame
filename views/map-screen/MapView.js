@@ -6,6 +6,7 @@ import {
   Dimensions,
   TouchableOpacity,
   Platform,
+  Alert
 } from 'react-native';
 import { MaterialIcons, Ionicons } from '@expo/vector-icons';
 import MapView, {
@@ -15,12 +16,14 @@ import MapView, {
   Circle,
 } from 'react-native-maps';
 
+
 import * as Location from 'expo-location'
 import { watchPosition } from './PositionWatcher';
-import { getDangerZones } from './DangerZonesAPI';
+import { addEvent, getDangerZones } from './DangerZonesAPI';
 import { Modal } from 'react-native-paper';
 import { ActionsModal } from './ActionsModal';
 import { EmergencyModal } from './EmergencyModal';
+import { PositionSourceModal } from './PositionSourceModal';
 
 const screen = Dimensions.get('window');
 
@@ -35,8 +38,6 @@ const INITIAL_COORDS = {
   latitudeDelta: LATITUDE_DELTA,
   longitudeDelta: LONGITUDE_DELTA
 }
-
-
 
 class AnimatedMarkers extends React.Component {
   _map = React.createRef()
@@ -57,6 +58,12 @@ class AnimatedMarkers extends React.Component {
       dangerZones: [],
       actionModalVisible: false,
       emergencyModalVisible: false,
+      eventToAdd: 'none',
+      eventCoordinates: {
+        ...INITIAL_COORDS
+      },
+      positionSource: '',
+      positionSourceModalVisible: false,
     };
   }
 
@@ -75,11 +82,10 @@ class AnimatedMarkers extends React.Component {
         coordinate.timing({ ...newCoordinate, useNativeDriver: true }).start();
 
       }
-      if(this == null || this._map == null || this._map.current == null)
-      return;
-      if (this.state.isFocusingUser  )
-
-        this._map.current.animateToRegion(coords);
+      if (this == null || this._map == null || this._map.current == null)
+        return;
+      if (this.state.isFocusingUser)
+        this._map.current.animateCamera({ center: coords, heading: 0, pitch: 45 })
     }
     catch (err) { console.log(err) }
   }
@@ -91,6 +97,46 @@ class AnimatedMarkers extends React.Component {
     }
   }
 
+  setPositionSource(positionSource) {
+    this.setState({ positionSource: positionSource, positionSourceModalVisible: false })
+    if (positionSource = '')
+      return;
+    if (positionSource == 'select') {
+      Alert.alert(
+        "Alert Title",
+        "My Alert Msg",
+        [
+          {
+            text: "Cancel",
+            onPress: () => console.log("Cancel Pressed"),
+            style: "cancel"
+          },
+          { text: "OK", onPress: () => console.log("OK Pressed") }
+        ],
+        { cancelable: false }
+      );
+
+      Alert.alert(
+        '',
+        'Seleccion el lugar del mapa en donde ocurrio',
+        [
+          { text: 'OK', onPress: () => console.log('OK Pressed') }
+        ],
+        { cancelable: false }
+      );
+    }
+  }
+
+  mapPressed(args) {
+    console.log(this.state.positionSource)
+    console.log(args.nativeEvent)
+    if (this.state.positionSource == 'select'){
+      this.setState({ eventCoordinates: { ...args.nativeEvent.coordinate } })
+      addEvent({coordinates: args.nativeEvent.coordinate, type: this.state.eventToAdd, timestamp: 0})
+      this.setState({dangerZones: getDangerZones()})
+    }
+  }
+
   setActionModalVisible(boolean) {
     this.setState({ actionModalVisible: boolean });
   }
@@ -99,23 +145,31 @@ class AnimatedMarkers extends React.Component {
     this.setState({ emergencyModalVisible: boolean });
   }
 
+  eventSelected(action) {
+    console.log("event selectd " + action);
+    this.setState({ eventToAdd: action, actionModalVisible: false, positionSourceModalVisible: true, eventToAdd: action });
+  }
+
+
   render() {
     if (this.state.coordinate.latitude == 0) return <Text>Loading...</Text>
     console.log("rendering")
     return (
       <View style={styles.container}>
-        <MapView
+        <MapView.Animated
           showsBuildings={false}
           showsIndoors={false}
           ref={this._map}
           style={styles.map}
-          //region={this.state.region}
+          onPress={args => this.mapPressed(args)}
+
           initialRegion={{
             latitude: this.state.region.latitude,
             longitude: this.state.region.longitude,
             latitudeDelta: LATITUDE_DELTA,
             longitudeDelta: LONGITUDE_DELTA,
           }}
+        // onPress={(args) => mapPressed(args)}
         >
           <Marker.Animated
             ref={(marker) => {
@@ -123,6 +177,15 @@ class AnimatedMarkers extends React.Component {
             }}
             coordinate={this.state.coordinate}
           />
+          {
+            (this.state.eventCoordinates.latitude != 0) ? (
+              <Marker
+                draggable={true}
+                coordinate={this.state.eventCoordinates}
+                onDragEnd={args => this.mapPressed(args)}
+                pinColor={'green'} />
+            ) : <></>
+          }
           {
             this.state.dangerZones.map(dangerZone => (
               <MapView.Circle
@@ -133,9 +196,11 @@ class AnimatedMarkers extends React.Component {
               />
             ))
           }
-        </MapView>
-        <ActionsModal visible={this.state.actionModalVisible} setVisible={(val) => this.setActionModalVisible(val)} notifyAction={(action) => console.log(action)} ></ActionsModal>
+        </MapView.Animated>
+
+        <ActionsModal visible={this.state.actionModalVisible} setVisible={(val) => this.setActionModalVisible(val)} notifyAction={(action) => this.eventSelected(action)} ></ActionsModal>
         <EmergencyModal visible={this.state.emergencyModalVisible} setVisible={(val) => this.setEmergencyModalVisible(val)} />
+        <PositionSourceModal visible={this.state.positionSourceModalVisible} setPositionSource={val => this.setPositionSource(val)} />
         <Ionicons onPress={() => this.setActionModalVisible(true)} name="warning-outline" backgroundColor={'yellow'} size={40} color={'black'} style={{ position: 'absolute', bottom: 60, right: 10 }} />
         <MaterialIcons onPress={() => this.toggleIsFocusingUser()} name="gps-fixed" size={40} backgroundColor="white" color={this.state.isFocusingUser ? "green" : "grey"} style={{ position: 'absolute', bottom: 10, right: 10 }} />
         <MaterialIcons onPress={() => this.setEmergencyModalVisible(true)} name="error" size={60} backgroundColor="white" color='red' style={{ position: 'absolute', top: 50, right: 10 }} />

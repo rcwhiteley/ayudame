@@ -19,19 +19,6 @@ const MapScreen = () => {
 
     return (
       <AnimatedMarkers/>
-        // <View style={styles.container} onPress ={()=>animate()}>
-
-        //     <MapView
-        //         // provider=''
-        //         style={styles.map}
-        //         initialRegion={initialRegion}>
-        //         <Marker.Animated ref={marker} coordinate={coordinates}></Marker.Animated>
-        //     </MapView>
-        //   <TouchableOpacity
-        //     onPress={() => animate()}>
-        //     <Text>Animate</Text>
-        //   </TouchableOpacity>
-        // </View>
     )
 }
 
