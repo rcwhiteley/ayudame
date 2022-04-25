@@ -3,7 +3,8 @@ import { Modal, Text, Pressable, View } from 'react-native'
 import { StyleSheet } from 'react-native'
 import { Ionicons } from '@expo/vector-icons';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { Button } from '../../components/Button';
+import { Button } from 'react-native-paper'
+import { color } from 'react-native/Libraries/Components/View/ReactNativeStyleAttributes';
 
 export const ActionsModal = ({ visible, setVisible, notifyAction }) => {
     return (
@@ -14,13 +15,20 @@ export const ActionsModal = ({ visible, setVisible, notifyAction }) => {
             transparent={true}
 
             visible={visible}>
-
             <View style={styles.container}>
+                <View style={styles.exitContainer}>
                 <Ionicons name="close" size={30} color="grey" iconStyle={styles.exitButton} onPress={() => setVisible(false)} />
-                <Button style={styles.button} textStyle={styles.text} title='asalto' onPress={() => notifyAction('asalto')}></Button>
-                <Button style={styles.button} textStyle={styles.text} title='robo' onPress={() => notifyAction('robo')}></Button>
-                <Button style={styles.button} textStyle={styles.text} title='rapto' onPress={() => notifyAction('rapto')}></Button>
-                <Button style={styles.button} textStyle={styles.text} title='grupo molesto' onPress={() => notifyAction('grupo_molesto')}></Button>
+                </View>
+                <View style={{flexDirection: 'row'}}>
+                    <View style={{width: '50%', padding: 2}}>
+                        <Button style={styles.button} mode='outlined' labelStyle={{color:'blue'}} title='asalto' onPress={() => notifyAction('asalto')}>Asalto</Button>
+                        <Button style={styles.button} mode='outlined' labelStyle={{color:'blue'}} title='robo' onPress={() => notifyAction('robo')}>Robo</Button>
+                    </View>
+                    <View style={{width: '50%', padding: 2}}>
+                        <Button style={styles.button} mode='outlined' labelStyle={{color:'blue'}} title='rapto' onPress={() => notifyAction('rapto')}>Rapto</Button>
+                        <Button style={styles.button} mode='outlined' labelStyle={{color:'blue'}} title='grupo molesto' onPress={() => notifyAction('grupo_molesto')}>Grupo Molesto</Button>
+                    </View>
+                </View>
             </View>
         </Modal>
 
@@ -31,7 +39,8 @@ const styles = StyleSheet.create({
     container: {
         alignSelf: 'flex-end',
         flex: 1,
-        padding: 20,
+        padding: 10,
+        paddingTop: 10,
         backgroundColor: 'white',
         position: 'absolute',
         bottom: 0,
@@ -39,14 +48,7 @@ const styles = StyleSheet.create({
     },
 
     button: {
-        marginVertical: 20,
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingVertical: 12,
-        paddingHorizontal: 32,
-        borderRadius: 4,
-        elevation: 3,
-        backgroundColor: '#3464eb',
+        marginVertical: 5,
     },
     text: {
         fontSize: 16,
@@ -59,8 +61,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'flex-end',
         alignSelf: 'flex-end',
-        borderColor: 'black',
-        borderWidth: 1
+
     },
     exitButton: {
         alignSelf: 'flex-end',
