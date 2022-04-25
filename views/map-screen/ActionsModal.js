@@ -2,8 +2,8 @@ import React from 'react'
 import { Modal, Text, Pressable, View } from 'react-native'
 import { StyleSheet } from 'react-native'
 import { Ionicons } from '@expo/vector-icons';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { Button } from '../../components/Button';
+import { TouchableOpacity } from 'react-native';
+import { Button } from 'react-native-paper';
 
 export const ActionsModal = ({ visible, setVisible, notifyAction }) => {
     return (
@@ -12,41 +12,44 @@ export const ActionsModal = ({ visible, setVisible, notifyAction }) => {
             style={{ flex: 1 }}
             animationType='slide'
             transparent={true}
+            visible={visible}
+            onRequestClose={()=>{setVisible(false);}}>
+            <TouchableOpacity style={styles.mainContainer} onPress={()=>{setVisible(false);}}>
+                <TouchableOpacity style={styles.container} onPress={()=>{setVisible(false);}}>
+                    <Ionicons name="close" size={30} color="grey" style={styles.exitButton} onPress={() => setVisible(false)} />
+                    <Button mode='contained' style={styles.button} textStyle={styles.text} title='asalto' onPress={() => notifyAction('asalto')}>Asalto</Button>
+                    <Button mode='contained' style={styles.button} textStyle={styles.text} title='robo' onPress={() => notifyAction('robo')}>Robo</Button>
+                    <Button mode='contained' style={styles.button} title='rapto' onPress={() => notifyAction('rapto')}>Rapto</Button>
+                    <Button mode='contained' style={styles.button} title='grupo molesto' onPress={() => notifyAction('grupo_molesto')}>Grupo molesto</Button>
 
-            visible={visible}>
+                </TouchableOpacity>
+            </TouchableOpacity>
 
-            <View style={styles.container}>
-                <Ionicons name="close" size={30} color="grey" iconStyle={styles.exitButton} onPress={() => setVisible(false)} />
-                <Button style={styles.button} textStyle={styles.text} title='asalto' onPress={() => notifyAction('asalto')}></Button>
-                <Button style={styles.button} textStyle={styles.text} title='robo' onPress={() => notifyAction('robo')}></Button>
-                <Button style={styles.button} textStyle={styles.text} title='rapto' onPress={() => notifyAction('rapto')}></Button>
-                <Button style={styles.button} textStyle={styles.text} title='grupo molesto' onPress={() => notifyAction('grupo_molesto')}></Button>
-            </View>
         </Modal>
 
     )
 }
 
 const styles = StyleSheet.create({
+    mainContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignContent: 'center',
+        backgroundColor: 'transparent',
+        margin: 0,
+    },
     container: {
         alignSelf: 'flex-end',
         flex: 1,
-        padding: 20,
-        backgroundColor: 'white',
+        padding: 10,
+        backgroundColor: 'transparent',
         position: 'absolute',
-        bottom: 0,
+        bottom: 90,
         borderRadius: 10
     },
 
     button: {
-        marginVertical: 20,
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingVertical: 12,
-        paddingHorizontal: 32,
-        borderRadius: 4,
-        elevation: 3,
-        backgroundColor: '#3464eb',
+        marginVertical: 5,
     },
     text: {
         fontSize: 16,

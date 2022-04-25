@@ -6,15 +6,15 @@ import {
   Dimensions,
   TouchableOpacity,
   Platform,
-  Alert
 } from 'react-native';
-import { MaterialIcons, Ionicons } from '@expo/vector-icons';
+import { MaterialIcons, Ionicons, AntDesign } from '@expo/vector-icons';
 import MapView, {
   ProviderPropType,
   Marker,
   AnimatedRegion,
   Circle,
 } from 'react-native-maps';
+import {Button} from 'react-native-paper';
 
 
 import * as Location from 'expo-location'
@@ -24,12 +24,13 @@ import { Modal } from 'react-native-paper';
 import { ActionsModal } from './ActionsModal';
 import { EmergencyModal } from './EmergencyModal';
 import { PositionSourceModal } from './PositionSourceModal';
+import { Fragment } from 'react/cjs/react.production.min';
 
 const screen = Dimensions.get('window');
 
 const ASPECT_RATIO = screen.width / screen.height;
-var LATITUDE = 37.78825;
-var LONGITUDE = -122.4324;
+var LATITUDE = 0;
+var LONGITUDE = 0;
 const LATITUDE_DELTA = 0.005;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 const INITIAL_COORDS = {
@@ -64,6 +65,7 @@ class AnimatedMarkers extends React.Component {
       },
       positionSource: '',
       positionSourceModalVisible: false,
+      confirmEventPositionVisible: false,
     };
   }
 
@@ -102,39 +104,21 @@ class AnimatedMarkers extends React.Component {
     if (positionSource = '')
       return;
     if (positionSource == 'select') {
-      Alert.alert(
-        "Alert Title",
-        "My Alert Msg",
-        [
-          {
-            text: "Cancel",
-            onPress: () => console.log("Cancel Pressed"),
-            style: "cancel"
-          },
-          { text: "OK", onPress: () => console.log("OK Pressed") }
-        ],
-        { cancelable: false }
-      );
-
-      Alert.alert(
-        '',
-        'Seleccion el lugar del mapa en donde ocurrio',
-        [
-          { text: 'OK', onPress: () => console.log('OK Pressed') }
-        ],
-        { cancelable: false }
-      );
+      this.setState({confirmEventPositionVisible: true});
     }
   }
 
   mapPressed(args) {
     console.log(this.state.positionSource)
     console.log(args.nativeEvent)
-    if (this.state.positionSource == 'select'){
-      this.setState({ eventCoordinates: { ...args.nativeEvent.coordinate } })
-      addEvent({coordinates: args.nativeEvent.coordinate, type: this.state.eventToAdd, timestamp: 0})
-      this.setState({dangerZones: getDangerZones()})
+    if (this.state.positionSource == 'select') {
+      this.setState({ eventCoordinates: { ...args.nativeEvent.coordinate }, confirmEventPositionVisible: true })
     }
+  }
+
+  confirmEventPosition(){
+    addEvent({ coordinates: this.state.eventCoordinates, type: this.state.eventToAdd, timestamp: 0 })
+    this.setState({dangerZones: getDangerZones(), confirmEventPositionVisible:false, positionSource:'', eventCoordinates:{...INITIAL_COORDS}})
   }
 
   setActionModalVisible(boolean) {
@@ -169,7 +153,6 @@ class AnimatedMarkers extends React.Component {
             latitudeDelta: LATITUDE_DELTA,
             longitudeDelta: LONGITUDE_DELTA,
           }}
-        // onPress={(args) => mapPressed(args)}
         >
           <Marker.Animated
             ref={(marker) => {
@@ -178,12 +161,13 @@ class AnimatedMarkers extends React.Component {
             coordinate={this.state.coordinate}
           />
           {
-            (this.state.eventCoordinates.latitude != 0) ? (
+            (this.state.positionSource == 'select') ? (
               <Marker
                 draggable={true}
                 coordinate={this.state.eventCoordinates}
                 onDragEnd={args => this.mapPressed(args)}
-                pinColor={'green'} />
+                pinColor={'green'} >
+              </Marker>
             ) : <></>
           }
           {
@@ -198,12 +182,24 @@ class AnimatedMarkers extends React.Component {
           }
         </MapView.Animated>
 
-        <ActionsModal visible={this.state.actionModalVisible} setVisible={(val) => this.setActionModalVisible(val)} notifyAction={(action) => this.eventSelected(action)} ></ActionsModal>
+        <ActionsModal visible={this.state.actionModalVisible} setVisible={(val) => this.setActionModalVisible(val)} notifyAction={(action) => this.eventSelected(action)} />
         <EmergencyModal visible={this.state.emergencyModalVisible} setVisible={(val) => this.setEmergencyModalVisible(val)} />
         <PositionSourceModal visible={this.state.positionSourceModalVisible} setPositionSource={val => this.setPositionSource(val)} />
-        <Ionicons onPress={() => this.setActionModalVisible(true)} name="warning-outline" backgroundColor={'yellow'} size={40} color={'black'} style={{ position: 'absolute', bottom: 60, right: 10 }} />
-        <MaterialIcons onPress={() => this.toggleIsFocusingUser()} name="gps-fixed" size={40} backgroundColor="white" color={this.state.isFocusingUser ? "green" : "grey"} style={{ position: 'absolute', bottom: 10, right: 10 }} />
-        <MaterialIcons onPress={() => this.setEmergencyModalVisible(true)} name="error" size={60} backgroundColor="white" color='red' style={{ position: 'absolute', top: 50, right: 10 }} />
+
+        {this.state.confirmEventPositionVisible ? (<TouchableOpacity  visible={false} style={{ backgroundColor: 'white', visible: false, borderRadius: 30, padding: 5}}>
+          <AntDesign onPress={()=>this.confirmEventPosition()} name="checkcircle" size={60} backgroundColor='white' color="green" visible={true} />
+        </TouchableOpacity >) : <></>
+      }
+        <TouchableOpacity title={'dsad'} style={{ backgroundColor: 'white', borderRadius: 30, position: 'absolute', top: 50, right: 10, width: 60, height: 60 }}>
+          <MaterialIcons onPress={() => this.setEmergencyModalVisible(true)} name="error" size={60} backgroundColor="white" color='red' />
+        </TouchableOpacity>
+          
+        <TouchableOpacity style={{ backgroundColor: 'yellow', position: 'absolute', bottom: 60, right: 10, width: 40, height: 40 }}>
+          <Ionicons onPress={() => this.setActionModalVisible(true)} name="warning-outline" backgroundColor={'#ffcc00'} size={40} color={'black'} />
+        </TouchableOpacity>
+        <TouchableOpacity style={{ position: 'absolute', bottom: 10, right: 10 , backgroundColor: 'white', borderRadius: 30, width: 40, height: 40 }}>
+          <MaterialIcons onPress={() => this.toggleIsFocusingUser()} name="gps-fixed" size={40} backgroundColor="white" color={this.state.isFocusingUser ? "green" : "grey"} style={{ }} />
+        </TouchableOpacity>
       </View>
     );
   }

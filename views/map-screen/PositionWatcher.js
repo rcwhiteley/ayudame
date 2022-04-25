@@ -7,7 +7,7 @@ export const watchPosition = async (callback) => {
         console.log('debieeed')
     }
     let locations = await Location.watchPositionAsync(
-        { accuracy: Location.Accuracy.Highest, timeInterval: 1000, distanceInterval: 0 },
+        { accuracy: Location.Accuracy.Highest, timeInterval: 500, distanceInterval: 0 },
         callback
         )
 }
