@@ -1,3 +1,5 @@
+
+const baseUrl = 'https://ayudame-backend.azurewebsites.net'
 var DANGER_ZONES = [
     {
         latitude: -36.830084563410594,
@@ -9,28 +11,21 @@ var DANGER_ZONES = [
         longitude: -73.05424218220031,
         level: 1,
     }];
-export const getDangerZones = (coordinates) => {
+export const getDangerZones = async (coordinates) => {
 
-    return DANGER_ZONES;
+    let res = await fetch(`${baseUrl}/dangerzones`).then(res => res.json());
+    //console.log(res);
+    return res;
 }
 
-export const addEvent = (dangerEvent) => {
-    let dangerZone = {...dangerEvent.coordinates}
-    switch (dangerEvent.type) {
-        case "asalto":
-            dangerZone.level = 3
-            break;
-        case "rapto":
-            dangerZone.level = 4
-            break;
-        case "robo":
-            dangerZone.level = 2
-            break;
-        case "grupo_molesto":
-            dangerZone.level = 1
-            break;
-        default:
-            break;
-    }
+export const addEvent = async (dangerEvent) => {
+    let dangerZone = { ...dangerEvent.coordinates, type: dangerEvent.type, timestamp: 0 }
+    let res = await fetch(`${baseUrl}/events`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dangerZone),
+    }).catch(err => console.log("Hubo un error"));
+    console.log("xd");
+
     DANGER_ZONES.push(dangerZone)
 }

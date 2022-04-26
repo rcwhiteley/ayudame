@@ -14,7 +14,7 @@ import MapView, {
   AnimatedRegion,
   Circle,
 } from 'react-native-maps';
-import {Button} from 'react-native-paper';
+import { Button } from 'react-native-paper';
 
 
 import * as Location from 'expo-location'
@@ -104,7 +104,7 @@ class AnimatedMarkers extends React.Component {
     if (positionSource = '')
       return;
     if (positionSource == 'select') {
-      this.setState({confirmEventPositionVisible: true});
+      this.setState({ confirmEventPositionVisible: true });
     }
   }
 
@@ -116,9 +116,10 @@ class AnimatedMarkers extends React.Component {
     }
   }
 
-  confirmEventPosition(){
+  async confirmEventPosition() { 
     addEvent({ coordinates: this.state.eventCoordinates, type: this.state.eventToAdd, timestamp: 0 })
-    this.setState({dangerZones: getDangerZones(), confirmEventPositionVisible:false, positionSource:'', eventCoordinates:{...INITIAL_COORDS}})
+    let newZones = await getDangerZones(this.state.eventCoordinates);
+    this.setState({ dangerZones: newZones, confirmEventPositionVisible: false, positionSource: '', eventCoordinates: { ...INITIAL_COORDS } })
   }
 
   setActionModalVisible(boolean) {
@@ -138,6 +139,7 @@ class AnimatedMarkers extends React.Component {
   render() {
     if (this.state.coordinate.latitude == 0) return <Text>Loading...</Text>
     console.log("rendering")
+    //console.log(this.state);
     return (
       <View style={styles.container}>
         <MapView.Animated
@@ -186,19 +188,19 @@ class AnimatedMarkers extends React.Component {
         <EmergencyModal visible={this.state.emergencyModalVisible} setVisible={(val) => this.setEmergencyModalVisible(val)} />
         <PositionSourceModal visible={this.state.positionSourceModalVisible} setPositionSource={val => this.setPositionSource(val)} />
 
-        {this.state.confirmEventPositionVisible ? (<TouchableOpacity  visible={false} style={{ backgroundColor: 'white', visible: false, borderRadius: 30, padding: 5}}>
-          <AntDesign onPress={()=>this.confirmEventPosition()} name="checkcircle" size={60} backgroundColor='white' color="green" visible={true} />
+        {this.state.confirmEventPositionVisible ? (<TouchableOpacity visible={false} style={{ backgroundColor: 'white', visible: false, borderRadius: 30, padding: 5 }}>
+          <AntDesign onPress={() => this.confirmEventPosition()} name="checkcircle" size={60} backgroundColor='white' color="green" visible={true} />
         </TouchableOpacity >) : <></>
-      }
+        }
         <TouchableOpacity title={'dsad'} style={{ backgroundColor: 'white', borderRadius: 30, position: 'absolute', top: 50, right: 10, width: 60, height: 60 }}>
           <MaterialIcons onPress={() => this.setEmergencyModalVisible(true)} name="error" size={60} backgroundColor="white" color='red' />
         </TouchableOpacity>
-          
+
         <TouchableOpacity style={{ backgroundColor: 'yellow', position: 'absolute', bottom: 60, right: 10, width: 40, height: 40 }}>
           <Ionicons onPress={() => this.setActionModalVisible(true)} name="warning-outline" backgroundColor={'#ffcc00'} size={40} color={'black'} />
         </TouchableOpacity>
-        <TouchableOpacity style={{ position: 'absolute', bottom: 10, right: 10 , backgroundColor: 'white', borderRadius: 30, width: 40, height: 40 }}>
-          <MaterialIcons onPress={() => this.toggleIsFocusingUser()} name="gps-fixed" size={40} backgroundColor="white" color={this.state.isFocusingUser ? "green" : "grey"} style={{ }} />
+        <TouchableOpacity style={{ position: 'absolute', bottom: 10, right: 10, backgroundColor: 'white', borderRadius: 30, width: 40, height: 40 }}>
+          <MaterialIcons onPress={() => this.toggleIsFocusingUser()} name="gps-fixed" size={40} backgroundColor="white" color={this.state.isFocusingUser ? "green" : "grey"} style={{}} />
         </TouchableOpacity>
       </View>
     );
@@ -241,9 +243,13 @@ class AnimatedMarkers extends React.Component {
     })
   }
 
-
+  async getZones(){
+    let val = await getDangerZones();
+    this.setState({ dangerZones: val })
+    console.log(this.val)
+  }
   componentDidMount() {
-    this.setState({ dangerZones: getDangerZones() })
+    this.getZones();
     this.useGps();
   }
 }
