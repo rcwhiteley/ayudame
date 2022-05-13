@@ -24,7 +24,6 @@ export const ActionsModal = ({ visible, setVisible, notifyAction }) => {
 
                 </TouchableOpacity>
             </TouchableOpacity>
-
         </Modal>
 
     )
@@ -35,16 +34,16 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignContent: 'center',
-        backgroundColor: 'transparent',
+        backgroundColor: 'rgba(52, 52, 52, 0.8)',
         margin: 0,
     },
     container: {
         alignSelf: 'flex-end',
         flex: 1,
-        padding: 10,
+        padding: 20,
         backgroundColor: 'transparent',
         position: 'absolute',
-        bottom: 90,
+        bottom: 140,
         borderRadius: 10
     },
 
