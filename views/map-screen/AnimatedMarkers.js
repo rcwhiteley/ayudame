@@ -24,7 +24,6 @@ import { Modal } from 'react-native-paper';
 import { ActionsModal } from './ActionsModal';
 import { EmergencyModal } from './EmergencyModal';
 import { PositionSourceModal } from './PositionSourceModal';
-import { Fragment } from 'react/cjs/react.production.min';
 
 const screen = Dimensions.get('window');
 

@@ -3,7 +3,8 @@ import MapView, { Marker, MarkerAnimated, AnimatedRegion } from 'react-native-ma
 
 import { StyleSheet, Text, View, Dimensions, TouchableOpacity, } from 'react-native';
 import * as Location from 'expo-location';
-import AnimatedMarkers from './MapView';
+import AnimatedMarkers from './AnimatedMarkers';
+import { MainView } from '../main/MainView';
 
 
 const screen = Dimensions.get('window');
@@ -15,10 +16,8 @@ const LATITUDE_DELTA = 0.0922;
 const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
 const MapScreen = () => {
-
-
     return (
-      <AnimatedMarkers/>
+      <MainView/>
     )
 }
 
