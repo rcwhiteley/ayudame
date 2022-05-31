@@ -5,12 +5,13 @@ import { NavigationContainer } from '@react-navigation/native';
 const image = require('../../assets/Rojito.jpg');
 const logo = require('../../assets/adaptatiteIcon1.png');
 const logoGoogle = require('../../assets/icongoogle.png');
+const logoincognito = require('../../assets/modoincognito.png');
 
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 const Login = ({ navigation, setLoggedIn }) => {
-  const [correo, YaEscritoEmail] = React.useState(null);
-  const [contrasenha, YaEscritoContra] = React.useState(null);
+  //const [correo, YaEscritoEmail] = React.useState(null);
+  //const [contrasenha, YaEscritoContra] = React.useState(null);
   const { login } = useAuthContext();
   return (
     <KeyboardAvoidingView
@@ -27,24 +28,18 @@ const Login = ({ navigation, setLoggedIn }) => {
 
               <Text style={styles.baseText}>
                 Bienvenido/@</Text>
-              <TextInput
-                style={styles.input}
-                onChangeText={YaEscritoEmail}
-                value={correo}
-                placeholder="Pon tu email" />
-              <TextInput
-                style={styles.input}
-                onChangeText={YaEscritoContra}
-                value={contrasenha}
-                placeholder="Pon tu contraseña" />
               <TouchableOpacity
                 style={styles.button}
                 activeOpacity={0.5}
                 onPress={() => {
                   login("TOKEN_USUARIO");
                 }}>
+                  <Image
+                  source={logoincognito}
+                  style={styles.buttonImageIconStyle}
+                  />
                 <Text
-                  style={styles.textoboton}>Iniciar Sesion</Text>
+                  style={styles.textoboton}>Iniciar sesión modo invitado</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.buttonGoogle}
@@ -57,7 +52,7 @@ const Login = ({ navigation, setLoggedIn }) => {
                   style={styles.buttonImageIconStyle}
                 />
                 <Text
-                  style={styles.buttonTextStyle}>Iniciar Sesion con Google</Text>
+                  style={styles.buttonTextStyle}>Iniciar sesión con Google</Text>
               </TouchableOpacity>
             </SafeAreaView >
           </ScrollView>
@@ -82,23 +77,21 @@ const styles = StyleSheet.create({
   cuadrito: {
     flex: 1,
     backgroundColor: "#FFFFFF",
-    marginTop: 10,
-    marginBottom: 80,
+    justifyContent:'center',
+    //marginTop: 20,
+    marginBottom: 30,
     marginLeft: 50,
     marginRight: 50,
     borderRadius: 20,
-    padding: 10,
+    padding: 20,
   },
   baseText: {
     fontWeight: 'bold',
     fontFamily: 'Roboto',
-    fontSize: 20,
+    fontSize: 30,
     textAlign: "center",
   },
-  textoboton: {
-    fontFamily: 'Roboto',
-    fontWeight: 'bold',
-  },
+  
   input: {
     height: 40,
     margin: 12,
@@ -109,9 +102,10 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   button: {
+    flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: "#DDDDDD",
-    padding: 10,
+    padding: 20,
     borderRadius: 20,
     margin: 10,
     borderWidth: 0.5,
@@ -119,34 +113,42 @@ const styles = StyleSheet.create({
   },
   buttonGoogle: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     backgroundColor: '#dc4e41',
     borderWidth: 0.5,
     borderColor: '#fff',
-    height: 40,
+    padding: 20,
+    //height: 40,
     borderRadius: 20,
     margin: 10,
-  },
+  }, 
   buttonImageIconStyle: {
     padding: 10,
-    margin: 10,
-    height: 25,
-    width: 25,
+    //marginLeft: 1,
+    height: 50,
+    width: 50,
     resizeMode: 'stretch',
+  },
+  textoboton: {
+    fontFamily: 'Roboto',
+    fontWeight: 'bold',
+    fontSize: 19,
   },
   buttonTextStyle: {
     color: '#fff',
     marginBottom: 4,
-    marginLeft: 12,
+    marginLeft: 5,
     fontFamily: 'Roboto',
     fontWeight: 'bold',
+    fontSize: 19,
   },
   logo: {
     flex: 2,
     width: 250,
     height: 250,
-    marginLeft: 70,
+    //marginLeft: 80,
     marginTop: 30,
+    alignSelf: 'center',
   },
 });
 
