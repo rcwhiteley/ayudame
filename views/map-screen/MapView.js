@@ -6,6 +6,7 @@ import {
   Dimensions,
   TouchableOpacity,
   Platform,
+  Alert,
 } from 'react-native';
 import { MaterialIcons, Ionicons, AntDesign } from '@expo/vector-icons';
 import MapView, {
@@ -93,9 +94,17 @@ class AnimatedMarkers extends React.Component {
   }
 
   toggleIsFocusingUser() {
+    
     this.setState({ isFocusingUser: !this.state.isFocusingUser })
     if (!this.state.isFocusingUser) {
-
+      Alert.alert(  
+        'Centrado',  
+        'Ha activado el centrado del mapa',);
+    }
+    else{
+      Alert.alert(  
+        'Centrado',  
+        'Ha desactivado el centrado del mapa',);
     }
   }
 
@@ -191,16 +200,16 @@ class AnimatedMarkers extends React.Component {
         {this.state.confirmEventPositionVisible ? (<TouchableOpacity visible={false} style={{ backgroundColor: 'white', visible: false, borderRadius: 30, padding: 5 }}>
           <AntDesign onPress={() => this.confirmEventPosition()} name="checkcircle" size={60} backgroundColor='white' color="green" visible={true} />
         </TouchableOpacity >) : <></>
-        }
-        <TouchableOpacity title={'dsad'} style={{ backgroundColor: 'white', borderRadius: 30, position: 'absolute', top: 50, right: 10, width: 60, height: 60 }}>
+      }
+        <TouchableOpacity title={'dsad'} style={{ backgroundColor: 'white',borderWidth: 1, borderRadius: 30, position: 'absolute', top: 60, right: 20, width: 61, height: 62 }}>
           <MaterialIcons onPress={() => this.setEmergencyModalVisible(true)} name="error" size={60} backgroundColor="white" color='red' />
         </TouchableOpacity>
-
-        <TouchableOpacity style={{ backgroundColor: 'yellow', position: 'absolute', bottom: 60, right: 10, width: 40, height: 40 }}>
-          <Ionicons onPress={() => this.setActionModalVisible(true)} name="warning-outline" backgroundColor={'#ffcc00'} size={40} color={'black'} />
+          
+        <TouchableOpacity style={{ backgroundColor: 'yellow', position: 'absolute',borderWidth: 1, bottom: 70, right: 20, width: 68, height: 78, borderRadius: 100}}>
+          <Ionicons onPress={() => this.setActionModalVisible(true)} name="md-alert-circle-outline" backgroundColor={'#ffcc00'} size={70} color={'black'}  />
         </TouchableOpacity>
-        <TouchableOpacity style={{ position: 'absolute', bottom: 10, right: 10, backgroundColor: 'white', borderRadius: 30, width: 40, height: 40 }}>
-          <MaterialIcons onPress={() => this.toggleIsFocusingUser()} name="gps-fixed" size={40} backgroundColor="white" color={this.state.isFocusingUser ? "green" : "grey"} style={{}} />
+        <TouchableOpacity style={{ position: 'absolute', top: 60, left: 20 ,borderWidth: 1, backgroundColor: 'white', borderRadius: 30, width: 61, height: 62}}>
+          <MaterialIcons onPress={() => this.toggleIsFocusingUser() } name="gps-fixed" size={60} backgroundColor="white" color={this.state.isFocusingUser ? "green" : "grey"} style={{}} />
         </TouchableOpacity>
       </View>
     );
